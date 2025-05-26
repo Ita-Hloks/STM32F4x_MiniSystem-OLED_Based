@@ -1,0 +1,30 @@
+{
+    "folders": [
+        {
+            "path": "."
+        },
+        {
+            "name": "STM32F4x_MiniSystem-OLED_Based",
+            "path": "../.."
+        }
+    ],
+    "settings": {
+        "files.associations": {
+            "key.h": "c",
+            "rtc.h": "c",
+            "adc.h": "c",
+            "string.h": "c",
+            "delay.h": "c",
+            "u_menu.h": "c",
+            "led.h": "c",
+            "oled.h": "c",
+            "clock.h": "c",
+            "menu.h": "c",
+            "sys.h": "c",
+            "usart.h": "c",
+            "usmart.h": "c",
+            "stdio.h": "c"
+        }
+    },
+    "extensions": {}
+}
