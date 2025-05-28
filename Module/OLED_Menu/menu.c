@@ -131,14 +131,7 @@ void Menu_NextApp()
 /****************************** APPLICATION FUNCTION ************************************/
 void Menu_App_Clock()
 {
-    clock_getTime_count++;
-    if ((clock_getTime_count % 5) == 0) /* 每100ms更新一次显示数据 */
-    {
-        rtc_get_time(&clock_h, &clock_m, &clock_s, &clock_ampm);
-    }
-    if ((clock_getTime_count % 5) == 0) {
-        clock_JudgeDisplayMode();
-    }
+    clock_runing();
 }
 
 void Menu_App_noteBook()
@@ -152,7 +145,7 @@ void Menu_JudgeApp_HandleKey(uint8_t menu_select_index, uint8_t key)
 {
     if (strcmp(menu[menu_select_index], "Clock") == 0)
     {
-        clock_HandleKeyPress(key);
+        clock_handle_key(key);
         Menu_App_Clock();
     }
     else if (strcmp(menu[menu_select_index], "NoteBook") == 0)

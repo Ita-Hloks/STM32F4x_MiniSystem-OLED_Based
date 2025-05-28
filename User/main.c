@@ -20,6 +20,7 @@
 
 // Module 
 #include "../Module/OLED_Menu/menu.h"
+#include "../Module/Clock/clock.h"
 
 // Other
 #include <string.h>
@@ -30,15 +31,6 @@
 uint8_t key = 0;
 uint8_t curr_state = 0;         // 当前的状态 0: 菜单栏 1: ???
 uint8_t menu_select_index = 0;
-
-// Clock
-uint8_t clock_h;
-uint8_t clock_m;
-uint8_t clock_s;
-uint8_t clock_ampm = 0;
-uint8_t clock_getTime_count = 0;
-uint8_t *cur_pos = NULL;
-uint8_t cur_pos_index = NULL; /* 0: null 1: hour 2: minus 3: secound */
 
 /********************************* GLOBALVAR END ***************************************/
 
@@ -79,6 +71,7 @@ int main(void)
 
     // Moudle_Init
     Menu_Init();
+    clock_init();
 
     while (1)
     {

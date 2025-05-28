@@ -23,7 +23,8 @@
             "sys.h": "c",
             "usart.h": "c",
             "usmart.h": "c",
-            "stdio.h": "c"
+            "stdio.h": "c",
+            "timer.h": "c"
         }
     },
     "extensions": {}

@@ -166,6 +166,9 @@
               },
               {
                 "path": "../../Drivers/BSP/ADC/adc.c"
+              },
+              {
+                "path": "../../Drivers/BSP/TIMER/timer.c"
               }
             ],
             "folders": []
