@@ -168,16 +168,17 @@ void TIMERX_INT_IRQHandler(void)
 void clock_init()
 {
     rtc_get_time(&rtc_h, &rtc_m, &rtc_s, &clock_ampm);
+    timerx_int_init(5000 - 1, 12000 - 1);
 }
 
 void clock_handle_key(uint8_t key)
 {
+
     switch (key)
     {
     // case KEY1_PRES: // Switch display size (12/16/24)
     //     delay_ms(200);
     //     break;
-
     case 2: // Switch editing position (h/m/s)
         if (++curPosIndex == 4)
             curPosIndex = 0;
@@ -188,8 +189,7 @@ void clock_handle_key(uint8_t key)
             timer_enable(TIMERX_INT);
             clockEdit_h = rtc_h;
             clockEdit_m = rtc_m;
-        }
-        if (curPosIndex == 0)
+        } else if (curPosIndex == 0)
         {
             clockEditMode = 0;
             timer_disable(TIMERX_INT);

@@ -27,17 +27,8 @@
 #include <string.h>
 
 /************************************ IMPORT END ****************************************/
-/********************************* GLOBALVAR START **************************************/
+
 uint8_t key = 0;
-
-// Menu
-uint8_t currState = 0;         // 当前的状态 0: 菜单栏 1: ???
-uint8_t selectAppIndex = 0;
-
-/********************************* GLOBALVAR END ***************************************/
-
-
-
 
 int main(void)
 {
@@ -58,15 +49,9 @@ int main(void)
     while (1)
     {
         key = key_scan(1);
+        
+        menu_main_running(key);
 
-        menu_exit(key);
-        if (currState == 0)
-        { // Menu
-            menu_switch_key(key);
-        } else if (currState == 1)
-        { // App
-            menu_judgeapp_handlekey(selectAppIndex, key);
-        }
         delay_ms(100);
     }
 }

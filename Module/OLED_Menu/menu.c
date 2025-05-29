@@ -16,6 +16,8 @@ static const char *menu[] = {
     "ABC1ABC2",
 };
 static uint8_t menuPointerIndex = 0; // 三角指针的位置，0在上， 1在下
+uint8_t selectAppIndex = 0;       // 应用程序选择的索引值
+uint8_t currState = 0;
 
 /****************************** STATIC FUNCTION START ***********************************/
 static void menu_skeleton()
@@ -110,31 +112,14 @@ static void menu_next_app()
 }
 
 /******************************** STATIC FUNCTION END ***********************************/
-
-void menu_init() {
-    menu_skeleton();
-    menu_contain();
-}
-
-void menu_exit(uint8_t key)
-{
-    if(key == 6 && currState != 0) {// EXIT
-        currState = 0;
-        oled_clear();
-        menu_skeleton();
-        menu_contain();
-    }
-}
-
 /****************************** APPLICATION FUNCTION ************************************/
-void Menu_App_Clock()
+void menu_app_clock()
 {
     clock_runing();
 }
 
-void Menu_App_noteBook()
+void menu_app_notebook()
 {
-    oled_clear();
     oled_show_string(40, 5, "NoteBook", 16);
     oled_refresh_gram();
 }
@@ -144,11 +129,11 @@ void menu_judgeapp_handlekey(uint8_t selectAppIndex, uint8_t key)
     if (strcmp(menu[selectAppIndex], "Clock") == 0)
     {
         clock_handle_key(key);
-        Menu_App_Clock();
+        menu_app_clock();
     }
     else if (strcmp(menu[selectAppIndex], "NoteBook") == 0)
     {
-        Menu_App_noteBook();
+        menu_app_notebook();
     }
     else if (strcmp(menu[selectAppIndex], "ADC Checker") == 0)
     {
@@ -176,5 +161,33 @@ void menu_switch_key(uint8_t key)
         delay_ms(50);
         printf("[DBG] Pointer now points to: %s\r\n", menu[selectAppIndex]);
         break;
+    }
+}
+
+void menu_init() {
+    menu_skeleton();
+    menu_contain();
+}
+
+void menu_exit(uint8_t key)
+{
+    if(key == 6 && currState != 0) {// EXIT
+        currState = 0;
+        oled_clear();
+        menu_skeleton();
+        menu_contain();
+    }
+}
+
+void menu_main_running(uint8_t key)
+{
+    menu_exit(key); 
+    if (currState == 0)
+    { // Menu
+        menu_switch_key(key);
+    }
+    else if (currState == 1)
+    { // App
+        menu_judgeapp_handlekey(selectAppIndex, key);
     }
 }
