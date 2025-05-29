@@ -17,6 +17,7 @@
 #include "./BSP/KEY/key.h"
 #include "./BSP/ADC/adc.h"
 #include "./USMART/usmart.h"
+#include "./BSP/TIMER/timer.h"
 
 // Module 
 #include "../Module/OLED_Menu/menu.h"
@@ -27,34 +28,15 @@
 
 /************************************ IMPORT END ****************************************/
 /********************************* GLOBALVAR START **************************************/
-// Menu
 uint8_t key = 0;
-uint8_t curr_state = 0;         // 当前的状态 0: 菜单栏 1: ???
-uint8_t menu_select_index = 0;
+
+// Menu
+uint8_t currState = 0;         // 当前的状态 0: 菜单栏 1: ???
+uint8_t selectAppIndex = 0;
 
 /********************************* GLOBALVAR END ***************************************/
 
-void menu_switch_key(uint8_t key)
-{
-    switch (key)
-    {
-    case 1: // CONFIRM
-        curr_state++;
-        oled_clear();
-        Menu_JudgeApp_HandleKey(menu_select_index, 0);
-        break;
-    case 2: // ADD
-        Menu_LastApp();
-        delay_ms(50);
-        printf("[DBG] Pointer now points to: %s\r\n", menu[menu_select_index]);
-        break;
-    case 3: // SUB
-        Menu_NextApp();
-        delay_ms(50);
-        printf("[DBG] Pointer now points to: %s\r\n", menu[menu_select_index]);
-        break;
-    }
-}
+
 
 
 int main(void)
@@ -70,22 +52,20 @@ int main(void)
     rtc_set_wakeup(WAKEUP_CKSPRE, 0); /* 配置WAKE UP中断,1秒钟中断一次 */
 
     // Moudle_Init
-    Menu_Init();
+    menu_init();
     clock_init();
 
     while (1)
     {
         key = key_scan(1);
 
-        // 退出函数始终监测
-        Menu_Exit(key);
-
-        if (curr_state == 0)
+        menu_exit(key);
+        if (currState == 0)
         { // Menu
             menu_switch_key(key);
-        } else if (curr_state == 1)
+        } else if (currState == 1)
         { // App
-            Menu_JudgeApp_HandleKey(menu_select_index, key);
+            menu_judgeapp_handlekey(selectAppIndex, key);
         }
         delay_ms(100);
     }

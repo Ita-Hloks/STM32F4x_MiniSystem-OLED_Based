@@ -27,6 +27,7 @@ static uint8_t *curPos;          /* Pointer to the current editing variable h/m/
 // Display
 static uint8_t display_h;
 static uint8_t display_m;
+static uint8_t countGetTime = 0; /* variable of the RTC to GET the time */
 static bool isBlink = false;
 
 /****************************** STATIC FUNCTION START ***********************************/
@@ -158,6 +159,7 @@ void TIMERX_INT_IRQHandler(void)
     if (timer_interrupt_flag_get(TIMERX_INT, TIMER_INT_FLAG_UP) == SET)     /* 判断定时器更新中断是否发生 */
     {
         isBlink = !isBlink;
+        printf("TIMER RUNNING");
         timer_interrupt_flag_clear(TIMERX_INT, TIMER_INT_FLAG_UP);          /* 清除定时器更新中断标志 */
     }
 }
@@ -165,7 +167,6 @@ void TIMERX_INT_IRQHandler(void)
 
 void clock_init()
 {
-    timerx_int_init(5000 - 1, 12000 - 1);
     rtc_get_time(&rtc_h, &rtc_m, &rtc_s, &clock_ampm);
 }
 
@@ -184,12 +185,14 @@ void clock_handle_key(uint8_t key)
         if (curPosIndex == 1)
         { // entering edit mode
             clockEditMode = 1;
+            timer_enable(TIMERX_INT);
             clockEdit_h = rtc_h;
             clockEdit_m = rtc_m;
         }
         if (curPosIndex == 0)
         {
             clockEditMode = 0;
+            timer_disable(TIMERX_INT);
             rtc_set_time(clockEdit_h, clockEdit_m, rtc_s, clock_ampm);
         }
         clock_choose_var(curPosIndex);
@@ -212,9 +215,9 @@ void clock_handle_key(uint8_t key)
 
 void clock_runing()
 {
-    static uint8_t clock_count_upt = 0; /* variable of the RTC to Update the time */
-    clock_count_upt++;
-    if ((clock_count_upt % 10) == 0) /* 每100ms更新一次显示数据 */
+
+    countGetTime++;
+    if ((countGetTime % 2) == 0) /* 每100ms更新一次显示数据 */
     {
         rtc_get_time(&rtc_h, &rtc_m, &rtc_s, &clock_ampm);
     }

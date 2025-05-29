@@ -6,7 +6,7 @@
 #include "menu.h"
 
 /************************************ IMPORT END ****************************************/
-const char *menu[] = {
+static const char *menu[] = {
     "Clock",
     "NoteBook",
     "ADC Checker",
@@ -15,10 +15,10 @@ const char *menu[] = {
     "ABC3",
     "ABC1ABC2",
 };
-uint8_t menu_pointer_index = 0; // 三角指针的位置，0在上， 1在下
+static uint8_t menuPointerIndex = 0; // 三角指针的位置，0在上， 1在下
 
 /****************************** STATIC FUNCTION START ***********************************/
-static void Menu_Skeletons()
+static void menu_skeleton()
 {
     oled_fill(0, 0, 130, 0, 1);
     oled_fill(0, 30, 130, 30, 1);
@@ -27,10 +27,10 @@ static void Menu_Skeletons()
     oled_refresh_gram();
 }
 
-static void Menu_Pointer()
+static void menu_pointer()
 {
     static uint8_t add = 0;
-    add = menu_pointer_index == 0 ? 0 : 15;
+    add = menuPointerIndex == 0 ? 0 : 15;
 
     // 三角形
     for (uint8_t i = 0; i < 5; i++)
@@ -44,88 +44,86 @@ static void Menu_Pointer()
  * @brief 当三角形指针在 上方 的菜单更新
  *
  */
-static void Menu_DisplayPointUp()
+static void menu_pointer_up()
 {
-    oled_show_string(20, 2, menu[menu_select_index], 12);
-    oled_show_string(20, 16, menu[menu_select_index + 1], 12);
+    oled_show_string(20, 2, menu[selectAppIndex], 12);
+    oled_show_string(20, 16, menu[selectAppIndex + 1], 12);
 }
 
 /**
  * @brief 当三角形指针在下方的菜单更新
  *
  */
-static void Menu_DisplayPointDown()
+static void menu_pointer_down()
 {
-    oled_show_string(20, 2, menu[menu_select_index - 1], 12);
-    oled_show_string(20, 16, menu[menu_select_index], 12);
+    oled_show_string(20, 2, menu[selectAppIndex - 1], 12);
+    oled_show_string(20, 16, menu[selectAppIndex], 12);
 }
 
-static void Menu_Contain()
+static void menu_contain()
 {
     oled_fill(5, 2, 126, 29, 0);
-    Menu_Pointer();
-    if (menu_pointer_index == 0)
+    menu_pointer();
+    if (menuPointerIndex == 0)
     {
-        Menu_DisplayPointUp();
+        menu_pointer_up();
     }
     else
     {
-        Menu_DisplayPointDown();
+        menu_pointer_down();
     }
+    oled_refresh_gram();
+}
+
+static void menu_last_app()
+{
+    oled_fill(5, 2, 126, 29, 0);
+    if (selectAppIndex != 0)
+    {
+        selectAppIndex--;
+    } else {
+        selectAppIndex = MENU_LEN - 1;
+    }
+    oled_fill(5, 17, 126, 29, 0);
+    oled_fill(5, 2, 126, 14, 0);
+
+    menuPointerIndex = 0;
+    menu_pointer();
+    menu_pointer_up();
+    oled_refresh_gram();
+}
+
+static void menu_next_app()
+{
+    oled_fill(5, 2, 126, 29, 0);
+    if (selectAppIndex + 1 < MENU_LEN)
+    {
+        selectAppIndex++;
+    } else {
+        selectAppIndex = 0;
+    }
+
+    menuPointerIndex = 1;
+    menu_pointer();
+    menu_pointer_down();
     oled_refresh_gram();
 }
 
 /******************************** STATIC FUNCTION END ***********************************/
 
-void Menu_Init() {
-    Menu_Skeletons();
-    Menu_Contain();
+void menu_init() {
+    menu_skeleton();
+    menu_contain();
 }
 
-void Menu_Exit(uint8_t key)
+void menu_exit(uint8_t key)
 {
-    if(key == 6 && curr_state != 0) {// EXIT
-        curr_state = 0;
+    if(key == 6 && currState != 0) {// EXIT
+        currState = 0;
         oled_clear();
-        Menu_Skeletons();
-        Menu_Contain();
+        menu_skeleton();
+        menu_contain();
     }
-}
-
-
-void Menu_LastApp()
-{
-    oled_fill(5, 2, 126, 29, 0);
-    if (menu_select_index != 0)
-    {
-        menu_select_index--;
-    } else {
-        menu_select_index = MENU_LEN - 1;
-    }
-    oled_fill(5, 17, 126, 29, 0);
-    oled_fill(5, 2, 126, 14, 0);
-
-    menu_pointer_index = 0;
-    Menu_Pointer();
-    Menu_DisplayPointUp();
-    oled_refresh_gram();
-}
-
-void Menu_NextApp()
-{
-    oled_fill(5, 2, 126, 29, 0);
-    if (menu_select_index + 1 < MENU_LEN)
-    {
-        menu_select_index++;
-    } else {
-        menu_select_index = 0;
-    }
-
-    menu_pointer_index = 1;
-    Menu_Pointer();
-    Menu_DisplayPointDown();
-
-    oled_refresh_gram();
 }
 
 /****************************** APPLICATION FUNCTION ************************************/
@@ -141,20 +139,42 @@ void Menu_App_noteBook()
     oled_refresh_gram();
 }
 
-void Menu_JudgeApp_HandleKey(uint8_t menu_select_index, uint8_t key)
+void menu_judgeapp_handlekey(uint8_t selectAppIndex, uint8_t key)
 {
-    if (strcmp(menu[menu_select_index], "Clock") == 0)
+    if (strcmp(menu[selectAppIndex], "Clock") == 0)
     {
         clock_handle_key(key);
         Menu_App_Clock();
     }
-    else if (strcmp(menu[menu_select_index], "NoteBook") == 0)
+    else if (strcmp(menu[selectAppIndex], "NoteBook") == 0)
     {
         Menu_App_noteBook();
     }
-    else if (strcmp(menu[menu_select_index], "ADC Checker") == 0)
+    else if (strcmp(menu[selectAppIndex], "ADC Checker") == 0)
     {
         oled_show_string(40, 5, "ADC Checker", 16);
         oled_refresh_gram();
+    }
+}
+
+void menu_switch_key(uint8_t key)
+{
+    switch (key)
+    {
+    case 1: // CONFIRM
+        currState++;
+        oled_clear();
+        menu_judgeapp_handlekey(selectAppIndex, 0);
+        break;
+    case 2: // ADD
+        menu_last_app();
+        delay_ms(50);
+        printf("[DBG] Pointer now points to: %s\r\n", menu[selectAppIndex]);
+        break;
+    case 3: // SUB
+        menu_next_app();
+        delay_ms(50);
+        printf("[DBG] Pointer now points to: %s\r\n", menu[selectAppIndex]);
+        break;
     }
 }
