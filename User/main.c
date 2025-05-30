@@ -20,8 +20,9 @@
 #include "./BSP/TIMER/timer.h"
 
 // Module 
-#include "../Module/OLED_Menu/menu.h"
+#include "../Module/Menu/menu.h"
 #include "../Module/Clock/clock.h"
+#include "../Module/StopWatch/stopwatch.h"
 
 // Other
 #include <string.h>
@@ -43,16 +44,16 @@ int main(void)
     rtc_set_wakeup(WAKEUP_CKSPRE, 0); /* 配置WAKE UP中断,1秒钟中断一次 */
 
     // Moudle_Init
-    menu_init();
     clock_init();
+    st_init();
+
+    // Menu Main
+    menu_init();
 
     while (1)
     {
         key = key_scan(1);
-        
         menu_main_running(key);
-
-        delay_ms(100);
     }
 }
 

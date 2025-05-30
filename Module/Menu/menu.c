@@ -3,14 +3,14 @@
 
 // Bank
 #include "../Module/Clock/clock.h"
-#include "menu.h"
+#include "../Module/StopWatch/stopwatch.h"
 
 /************************************ IMPORT END ****************************************/
 static const char *menu[] = {
     "Clock",
-    "NoteBook",
     "ADC Checker",
-    "ABC1",
+    "StopWatch",
+    "NoteBook",
     "ABC2",
     "ABC3",
     "ABC1ABC2",
@@ -128,12 +128,21 @@ void menu_judgeapp_handlekey(uint8_t selectAppIndex, uint8_t key)
 {
     if (strcmp(menu[selectAppIndex], "Clock") == 0)
     {
-        clock_handle_key(key);
+        if (key) {
+            clock_handle_key(key);
+        }
         menu_app_clock();
     }
     else if (strcmp(menu[selectAppIndex], "NoteBook") == 0)
     {
         menu_app_notebook();
+    }
+    else if (strcmp(menu[selectAppIndex], "StopWatch") == 0)
+    {
+        if (key) {
+            st_handle_key(key);
+        }
+        st_running();
     }
     else if (strcmp(menu[selectAppIndex], "ADC Checker") == 0)
     {
@@ -142,24 +151,28 @@ void menu_judgeapp_handlekey(uint8_t selectAppIndex, uint8_t key)
     }
 }
 
+// void menu_running_app() {
+
+// }
+
 void menu_switch_key(uint8_t key)
 {
+    if (key == 0) return;
     switch (key)
     {
     case 1: // CONFIRM
         currState++;
         oled_clear();
         menu_judgeapp_handlekey(selectAppIndex, 0);
+        delay_ms(100);
         break;
     case 2: // ADD
         menu_last_app();
         delay_ms(50);
-        printf("[DBG] Pointer now points to: %s\r\n", menu[selectAppIndex]);
         break;
     case 3: // SUB
         menu_next_app();
         delay_ms(50);
-        printf("[DBG] Pointer now points to: %s\r\n", menu[selectAppIndex]);
         break;
     }
 }
@@ -171,6 +184,7 @@ void menu_init() {
 
 void menu_exit(uint8_t key)
 {
+    if (key == 0) return;
     if(key == 6 && currState != 0) {// EXIT
         currState = 0;
         oled_clear();

@@ -24,7 +24,8 @@
             "usart.h": "c",
             "usmart.h": "c",
             "stdio.h": "c",
-            "timer.h": "c"
+            "timer.h": "c",
+            "stopwatch.h": "c"
         }
     },
     "extensions": {}

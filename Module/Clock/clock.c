@@ -159,7 +159,6 @@ void TIMERX_INT_IRQHandler(void)
     if (timer_interrupt_flag_get(TIMERX_INT, TIMER_INT_FLAG_UP) == SET)     /* 判断定时器更新中断是否发生 */
     {
         isBlink = !isBlink;
-        printf("TIMER RUNNING");
         timer_interrupt_flag_clear(TIMERX_INT, TIMER_INT_FLAG_UP);          /* 清除定时器更新中断标志 */
     }
 }
@@ -169,6 +168,7 @@ void clock_init()
 {
     rtc_get_time(&rtc_h, &rtc_m, &rtc_s, &clock_ampm);
     timerx_int_init(5000 - 1, 12000 - 1);
+    timer_disable(TIMERX_INT);
 }
 
 void clock_handle_key(uint8_t key)
@@ -191,9 +191,9 @@ void clock_handle_key(uint8_t key)
             clockEdit_m = rtc_m;
         } else if (curPosIndex == 0)
         {
+            rtc_set_time(clockEdit_h, clockEdit_m, rtc_s, clock_ampm);
             clockEditMode = 0;
             timer_disable(TIMERX_INT);
-            rtc_set_time(clockEdit_h, clockEdit_m, rtc_s, clock_ampm);
         }
         clock_choose_var(curPosIndex);
         oled_clear();

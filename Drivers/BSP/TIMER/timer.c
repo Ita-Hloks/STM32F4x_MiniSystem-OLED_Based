@@ -12,7 +12,7 @@
  */
  
 #include "./BSP/TIMER/timer.h"
-#include "./BSP/LED/led.h"
+// #include "./BSP/LED/led.h"
 
 
 /**
@@ -55,6 +55,33 @@ void    timerx_int_init(uint32_t arr, uint16_t psc)
     nvic_irq_enable(TIMERX_INT_IRQn, 1, 3);                     /* 配置NVIC设置优先级，抢占优先级1，响应优先级3 */
     
     timer_enable(TIMERX_INT);                                   /* 使能定时器TIMERX */
+}
+
+void timer1_int_init(uint32_t arr, uint16_t psc)
+{
+    timer_parameter_struct timer_initpara;                      /* timer_initpara用于存放定时器的参数 */
+
+    /* 使能外设定时器时钟 */ 
+    rcu_periph_clock_enable(RCU_TIMER1);                    /* 使能TIMER1的时钟 */
+
+    /* 复位定时器 */
+    timer_deinit(TIMER1);                                   /* 复位TIMER1 */
+    timer_struct_para_init(&timer_initpara);                    /* 初始化timer_initpara为默认值 */
+
+    /* 配置定时器参数 */
+    timer_initpara.prescaler         = psc;                     /* 设置预分频值 */
+    timer_initpara.alignedmode       = TIMER_COUNTER_EDGE;      /* 设置对齐模式为边沿对齐模式 */
+    timer_initpara.counterdirection  = TIMER_COUNTER_UP;        /* 设置向上计数模式 */
+    timer_initpara.period            = arr;                     /* 设置自动重装载值(32位) */
+    timer_initpara.clockdivision     = TIMER_CKDIV_DIV1;        /* 设置时钟分频因子 */
+    timer_initpara.repetitioncounter = 0;                       /* 设置重复计数器值 */
+    timer_init(TIMER1, &timer_initpara);                    /* 根据参数初始化定时器 */
+
+    /* 使能定时器及其中断 */
+    timer_interrupt_flag_clear(TIMER1, TIMER_INT_FLAG_UP);  /* 清除定时器更新中断标志 */
+    timer_interrupt_enable(TIMER1, TIMER_INT_UP);           /* 使能定时器的更新中断 */
+    nvic_irq_enable(TIMER1_IRQn, 1, 3);                     /* 配置NVIC设置优先级，抢占优先级1，响应优先级3 */
+    
 }
 
 // /**

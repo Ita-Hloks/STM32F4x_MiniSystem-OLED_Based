@@ -317,7 +317,7 @@ void RTC_WKUP_IRQHandler(void)
     if (RESET != rtc_flag_get(RTC_FLAG_WT))    /* WK_UP中断? */   
     {       
         rtc_flag_clear(RTC_FLAG_WT);           /* 清除中断标志 */
-        LED1_TOGGLE();
+        // LED1_TOGGLE();
     } 
     
     exti_flag_clear(EXTI_22);                  /* 清除中断线22的中断标志 */

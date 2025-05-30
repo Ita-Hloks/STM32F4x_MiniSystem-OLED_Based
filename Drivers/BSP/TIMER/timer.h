@@ -32,6 +32,7 @@
 /******************************************************************************************/
 
 void timerx_int_init(uint32_t arr, uint16_t psc);     /* 定时器TIMERX 定时中断初始化函数 */
+void timer1_int_init(uint32_t arr, uint16_t psc);
 
 #endif
 
