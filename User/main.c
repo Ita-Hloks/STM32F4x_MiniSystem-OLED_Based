@@ -41,6 +41,8 @@ int main(void)
     oled_init();
     key_init();
     rtc_config();
+    adc_init();
+    
     rtc_set_wakeup(WAKEUP_CKSPRE, 0); /* 配置WAKE UP中断,1秒钟中断一次 */
 
     // Moudle_Init

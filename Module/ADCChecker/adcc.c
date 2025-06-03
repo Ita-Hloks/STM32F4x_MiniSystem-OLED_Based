@@ -4,10 +4,10 @@
 #include "./BSP/OLED/oled.h"
 
 
-float adcx;
-float temp;
-uint8_t adk_displayMode = 0; // 0: 数字模式 1:可视化图标 2:混合模式
-uint8_t adk_ledDisplay = 0;
+static float adcx;
+static float temp;
+static uint8_t displayMode = 0; // 0: 数字模式 1:可视化图标 2:混合模式
+// static uint8_t adk_ledDisplay = 0;
 
 /****************************** STATIC FUNCTION START ***********************************/
 
@@ -83,7 +83,7 @@ uint8_t adk_ledDisplay = 0;
 //     }
 // }
 
-static void adcc_graph_mode()
+static void adcc_combination_mode()
 {
     static uint8_t xpos = 0;
     static uint8_t ypos = 0;
@@ -124,10 +124,6 @@ static void adcc_display_graph_mode()
     oled_refresh_gram();
 }
 
-/**
- * @brief Display the ADC number
- *
- */
 static void adcc_value_mode()
 {
     static uint8_t yps = 10;
@@ -142,11 +138,11 @@ static void adcc_value_mode()
 
 static void adcc_switch_mode()
 {
-    if (!adk_displayMode)
+    if (!displayMode)
     {
-        adcc_graph_mode();
+        adcc_combination_mode();
     }
-    else if (adk_displayMode == 1)
+    else if (displayMode == 1)
     {
         adcc_display_graph_mode();
     }
@@ -160,22 +156,20 @@ static void adcc_switch_mode()
 
 
 void adcc_handle_key(uint8_t key) {
+    if (key == 0) return;
     switch (key)
     {
     case 1:
-        if (++adk_displayMode >= 3)
+        if (++displayMode >= 3)
         {
-            adk_displayMode = 0;
+            displayMode = 0;
         }
-        oled_clear();
-        break;
-
-    default:
         break;
     }
 }
 
-void adcc_running() {
+void adcc_running()
+{
     adcx = adc_get_result_average(ADC_ADCX_CHY, 20); /* 获取通道CHY的转换值，20次取平均 */
     temp = (float)adcx * (3.3 / 4096);               /* 获取计算后的带小数的实际电压值(12位分辨率)，比如3.1111 */
     adcx = temp;

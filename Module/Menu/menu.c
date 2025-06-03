@@ -112,33 +112,34 @@ void menu_judgeapp_handlekey(uint8_t selectAppIndex, uint8_t key)
 {
     if (strcmp(menu[selectAppIndex], "Clock") == 0)
     {
-        if (key) {
+        if (key)
+        {
             clock_handle_key(key);
         }
         clock_runing();
     }
     else if (strcmp(menu[selectAppIndex], "NoteBook") == 0)
     {
-            oled_show_string(40, 5, "NoteBook", 16);
-    oled_refresh_gram();
+        oled_show_string(40, 5, "NoteBook", 16);
+        oled_refresh_gram();
     }
     else if (strcmp(menu[selectAppIndex], "StopWatch") == 0)
     {
-        if (key) {
+        if (key)
+        {
             st_handle_key(key);
         }
         st_running();
     }
     else if (strcmp(menu[selectAppIndex], "ADC Checker") == 0)
     {
-        oled_show_string(40, 5, "ADC Checker", 16);
-        oled_refresh_gram();
+        if (key)
+        {
+        adcc_handle_key(key);
+        }
+        adcc_running();
     }
 }
-
-// void menu_running_app() {
-
-// }
 
 void menu_switch_key(uint8_t key)
 {
