@@ -4,6 +4,7 @@
 // Bank
 #include "../Module/Clock/clock.h"
 #include "../Module/StopWatch/stopwatch.h"
+#include "../Module/ADCChecker/adcc.h"
 
 /************************************ IMPORT END ****************************************/
 static const char *menu[] = {
@@ -42,20 +43,13 @@ static void menu_pointer()
         oled_fill(15 - i * 2, y_start, 16 - i * 2, y_end, 1);
     }
 }
-/**
- * @brief 当三角形指针在 上方 的菜单更新
- *
- */
+
 static void menu_pointer_up()
 {
     oled_show_string(20, 2, menu[selectAppIndex], 12);
     oled_show_string(20, 16, menu[selectAppIndex + 1], 12);
 }
 
-/**
- * @brief 当三角形指针在下方的菜单更新
- *
- */
 static void menu_pointer_down()
 {
     oled_show_string(20, 2, menu[selectAppIndex - 1], 12);
@@ -113,16 +107,6 @@ static void menu_next_app()
 
 /******************************** STATIC FUNCTION END ***********************************/
 /****************************** APPLICATION FUNCTION ************************************/
-void menu_app_clock()
-{
-    clock_runing();
-}
-
-void menu_app_notebook()
-{
-    oled_show_string(40, 5, "NoteBook", 16);
-    oled_refresh_gram();
-}
 
 void menu_judgeapp_handlekey(uint8_t selectAppIndex, uint8_t key)
 {
@@ -131,11 +115,12 @@ void menu_judgeapp_handlekey(uint8_t selectAppIndex, uint8_t key)
         if (key) {
             clock_handle_key(key);
         }
-        menu_app_clock();
+        clock_runing();
     }
     else if (strcmp(menu[selectAppIndex], "NoteBook") == 0)
     {
-        menu_app_notebook();
+            oled_show_string(40, 5, "NoteBook", 16);
+    oled_refresh_gram();
     }
     else if (strcmp(menu[selectAppIndex], "StopWatch") == 0)
     {
