@@ -426,7 +426,7 @@ void clock_handle_key(uint8_t key)
 /**
  * @brief   Runing function, keep the clock read the correct data
  */
-void clock_runing(void)
+void clock_runing()
 {
     static uint8_t clock_count_upt = 0; /* variable of the RTC to Update the time */
     if ((clock_count_upt % 10) == 0)
@@ -436,4 +436,9 @@ void clock_runing(void)
     }
     clock_count_upt++;
     clock_display_time12();
+}
+
+void clock_exit() {
+    clockEditMode = 0;
+    curPosIndex = -1;
 }

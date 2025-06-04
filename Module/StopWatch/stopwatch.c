@@ -126,12 +126,12 @@ void st_handle_key(uint8_t key)
             timer_enable(TIMER1);
         }
         stMode = !stMode;
-        delay_ms(50);
+        delay_ms(150);
         break;
 
     case 2:
         st_zeroing();
-        delay_ms(50);
+        delay_ms(150);
         break;
     }
 }

@@ -10,9 +10,16 @@
 
 #include <string.h>
 
+
 // ──────────────────────────────────────────────────────────────────────────────
 // VAR & CONST DEF
 // ──────────────────────────────────────────────────────────────────────────────
+typedef void (*AppRunFunc)(uint8_t key);
+
+typedef struct {
+    const char *name;
+    AppRunFunc run;
+} AppEntry;
 
 #define MENU_LEN (sizeof(menu) / sizeof(menu[0]))
 
@@ -39,6 +46,22 @@ static void menu_pointer_down();
 static void menu_contain();
 static void menu_last_app();
 static void menu_next_app();
+// Application:
+void app_clock(uint8_t key);
+void app_stopwatch(uint8_t key);
+void app_adc_checker(uint8_t key);
+void app_notebook(uint8_t key);
+
+// Menu Construct Array:
+static const AppEntry appList[] = {
+    {"Clock",        app_clock},
+    {"ADC Checker",  app_adc_checker},
+    {"StopWatch",    app_stopwatch},
+    {"NoteBook",     app_notebook},
+    {"ABC2",         NULL},
+    {"ABC3",         NULL},
+    {"ABC1ABC2",     NULL},
+};
 
 // ──────────────────────────────────────────────────────────────────────────────
 // Implementation: STATTIC FUNCTIONS
@@ -128,40 +151,37 @@ static void menu_next_app()
     oled_refresh_gram();
 }
 
+// Application:
+
+void app_clock(uint8_t key) {
+    if (key) clock_handle_key(key);
+    clock_runing();
+}
+
+void app_stopwatch(uint8_t key) {
+    if (key) st_handle_key(key);
+    st_running();
+}
+
+void app_adc_checker(uint8_t key) {
+    if (key) adcc_handle_key(key);
+    adcc_running();
+}
+
+void app_notebook(uint8_t key) {
+    oled_show_string(40, 5, "NoteBook", 16);
+    oled_refresh_gram();
+}
+
+
 // ──────────────────────────────────────────────────────────────────────────────
 // Implementation: external call functions
 // ──────────────────────────────────────────────────────────────────────────────
 
 void menu_judgeapp_handlekey(uint8_t selectAppIndex, uint8_t key)
 {
-    if (strcmp(menu[selectAppIndex], "Clock") == 0)
-    {
-        if (key)
-        {
-            clock_handle_key(key);
-        }
-        clock_runing();
-    }
-    else if (strcmp(menu[selectAppIndex], "NoteBook") == 0)
-    {
-        oled_show_string(40, 5, "NoteBook", 16);
-        oled_refresh_gram();
-    }
-    else if (strcmp(menu[selectAppIndex], "StopWatch") == 0)
-    {
-        if (key)
-        {
-            st_handle_key(key);
-        }
-        st_running();
-    }
-    else if (strcmp(menu[selectAppIndex], "ADC Checker") == 0)
-    {
-        if (key)
-        {
-        adcc_handle_key(key);
-        }
-        adcc_running();
+    if (appList[selectAppIndex].run) {
+        appList[selectAppIndex].run(key);
     }
 }
 
@@ -196,6 +216,7 @@ void menu_exit(uint8_t key)
 {
     if (key == 0) return;
     if(key == 6 && currState != 0) {// EXIT
+        clock_exit();
         currState = 0;
         oled_clear();
         menu_skeleton();
