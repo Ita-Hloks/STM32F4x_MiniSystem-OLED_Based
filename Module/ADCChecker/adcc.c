@@ -3,12 +3,27 @@
 #include "./BSP/ADC/adc.h"
 #include "./BSP/OLED/oled.h"
 
+// ──────────────────────────────────────────────────────────────────────────────
+// VAR & CONST DEF
+// ──────────────────────────────────────────────────────────────────────────────
+
 static float adcx;
 static float temp;
 static uint8_t displayMode = 0; // 0: 数字模式 1:可视化图标 2:混合模式
 // static uint8_t adk_ledDisplay = 0;
 
-/****************************** STATIC FUNCTION START ***********************************/
+// ──────────────────────────────────────────────────────────────────────────────
+// Declaration: STATTIC FUNCTIONS
+// ──────────────────────────────────────────────────────────────────────────────
+
+static void adcc_combination_mode();
+static void adcc_display_graph_mode();
+static void adcc_value_mode();
+static void adcc_switch_mode();
+
+// ──────────────────────────────────────────────────────────────────────────────
+// Implementation: STATTIC FUNCTIONS
+// ──────────────────────────────────────────────────────────────────────────────
 
 // void adcc_led_control(uint8_t led_num, uint8_t state)
 // {
@@ -46,7 +61,6 @@ static uint8_t displayMode = 0; // 0: 数字模式 1:可视化图标 2:混合模
 //     {
 //         adcc_led_control(i, 0); // 关闭 LED1~LED6
 //     }
-
 //     // 根据电压范围点亮对应的 LED
 //     if (adcx == 0)
 //     {
@@ -151,7 +165,9 @@ static void adcc_switch_mode()
     }
 }
 
-/******************************** STATIC FUNCTION END ***********************************/
+// ──────────────────────────────────────────────────────────────────────────────
+// Implementation: external call functions
+// ──────────────────────────────────────────────────────────────────────────────
 
 void adcc_handle_key(uint8_t key)
 {

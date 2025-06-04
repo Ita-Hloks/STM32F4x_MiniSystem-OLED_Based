@@ -1,4 +1,5 @@
 #include "./clock.h"
+
 #include "./SYSTEM/usart/usart.h"
 #include "./SYSTEM/delay/delay.h"
 #include "./BSP/OLED/oled.h"
@@ -6,9 +7,13 @@
 #include "./USMART/usmart.h"
 #include "./BSP/TIMER/timer.h"
 
+#include "stdio.h"
+#include <stdbool.h>
+
 // ──────────────────────────────────────────────────────────────────────────────
 // VAR & CONST DEF
 // ──────────────────────────────────────────────────────────────────────────────
+
 #define CLOCK_FONT_SIZE 12            // DEFUALT SIZE
 #define CHAR_DX (CLOCK_FONT_SIZE / 2) // 每个字符宽度（像素）
 
@@ -60,13 +65,14 @@ bool blink_timer_running = false;
 // ──────────────────────────────────────────────────────────────────────────────
 // Declaration: STATTIC FUNCTIONS
 // ──────────────────────────────────────────────────────────────────────────────
-static void clock_update_cur_vars(void);
+
+static void clock_update_cur_vars();
 static inline void clock_choose_var(int8_t idx);
 static inline uint8_t get_disp_val(uint8_t edit_val, uint8_t rtc_val);
-static void clock_display_time12(void);
-static void clock_curvar_add(void);
-static void clock_curvar_sub(void);
-static inline void clock_blink_pause(void);
+static void clock_display_time12();
+static void clock_curvar_add();
+static void clock_curvar_sub();
+static inline void clock_blink_pause();
 
 // ──────────────────────────────────────────────────────────────────────────────
 // Implementation: STATTIC FUNCTIONS
@@ -75,7 +81,7 @@ static inline void clock_blink_pause(void);
 /**
  * @brief      Init the curVars arrays，Make it point to the corresponding edit variable
  */
-static void clock_update_cur_vars(void)
+static void clock_update_cur_vars()
 {
     curVars[EDIT_IDX_HOUR] = &clockEdit_h;
     curVars[EDIT_IDX_MIN] = &clockEdit_m;
@@ -117,7 +123,7 @@ static uint8_t draw_blink_num(uint8_t x, uint8_t y, uint16_t value, uint8_t digi
 /**
  * @brief  用 12 号字体分两行显示：“YY-MM-DD-W”，“HH:MM:SS”
  */
-static void clock_display_time12(void)
+static void clock_display_time12()
 {
     uint8_t x = 25;
     uint8_t y_date = 0;
@@ -205,7 +211,7 @@ static inline void clock_choose_var(int8_t idx)
     }
 }
 
-static void clock_curvar_add(void)
+static void clock_curvar_add()
 {
     if (curPos == NULL) return;
 
@@ -245,7 +251,7 @@ static void clock_curvar_add(void)
     }
 }
 
-static void clock_curvar_sub(void)
+static void clock_curvar_sub()
 {
     if (curPos == NULL) return;
 
@@ -285,7 +291,7 @@ static void clock_curvar_sub(void)
     }
 }
 
-static inline void clock_blink_pause(void)
+static inline void clock_blink_pause()
 {
     timer_disable(TIMERX_INT);
     blink_timer_running = false;

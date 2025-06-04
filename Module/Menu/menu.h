@@ -4,11 +4,8 @@
 #include "../Drivers/BSP/OLED/oled.h"
 #include "./BSP/RTC/rtc.h"
 
+
 #include <string.h>
-
-
-#define MENU_LEN (sizeof(menu) / sizeof(menu[0]))
-
 
 void menu_init();
 void menu_main_running(uint8_t key);

@@ -8,7 +8,7 @@
  * KEY6 : ÍË³ö
  *
  */
-/************************************ IMPORT START **************************************/
+
 // Bank
 #include "./SYSTEM/sys/sys.h"
 #include "./SYSTEM/usart/usart.h"
@@ -26,8 +26,6 @@
 
 // Other
 #include <string.h>
-
-/************************************ IMPORT END ****************************************/
 
 uint8_t key = 0;
 
@@ -48,8 +46,6 @@ int main(void)
     // Moudle_Init
     clock_init();
     st_init();
-
-    // Menu Main
     menu_init();
 
     while (1)

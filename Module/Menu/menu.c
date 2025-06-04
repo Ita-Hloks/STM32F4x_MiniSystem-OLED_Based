@@ -1,12 +1,21 @@
-/************************************ IMPORT START **************************************/
 #include "./menu.h"
 
-// Bank
+#include "./SYSTEM/delay/delay.h"
 #include "../Module/Clock/clock.h"
 #include "../Module/StopWatch/stopwatch.h"
 #include "../Module/ADCChecker/adcc.h"
+#include "./BSP/RTC/rtc.h"
+#include "../Drivers/BSP/OLED/oled.h"
+#include "./SYSTEM/sys/sys.h"
 
-/************************************ IMPORT END ****************************************/
+#include <string.h>
+
+// ──────────────────────────────────────────────────────────────────────────────
+// VAR & CONST DEF
+// ──────────────────────────────────────────────────────────────────────────────
+
+#define MENU_LEN (sizeof(menu) / sizeof(menu[0]))
+
 static const char *menu[] = {
     "Clock",
     "ADC Checker",
@@ -16,11 +25,25 @@ static const char *menu[] = {
     "ABC3",
     "ABC1ABC2",
 };
-static uint8_t menuPointerIndex = 0; // 三角指针的位置，0在上， 1在下
+static uint8_t menuPointerIndex = 0; // 三角指针的位置，0: Up， 1: Down
 uint8_t selectAppIndex = 0;       // 应用程序选择的索引值
 uint8_t currState = 0;
 
-/****************************** STATIC FUNCTION START ***********************************/
+// ──────────────────────────────────────────────────────────────────────────────
+// Declaration: STATTIC FUNCTIONS
+// ──────────────────────────────────────────────────────────────────────────────
+static void menu_skeleton();
+static void menu_pointer();
+static void menu_pointer_up();
+static void menu_pointer_down();
+static void menu_contain();
+static void menu_last_app();
+static void menu_next_app();
+
+// ──────────────────────────────────────────────────────────────────────────────
+// Implementation: STATTIC FUNCTIONS
+// ──────────────────────────────────────────────────────────────────────────────
+
 static void menu_skeleton()
 {
     oled_fill(0, 0, 130, 0, 1);
@@ -105,8 +128,9 @@ static void menu_next_app()
     oled_refresh_gram();
 }
 
-/******************************** STATIC FUNCTION END ***********************************/
-/****************************** APPLICATION FUNCTION ************************************/
+// ──────────────────────────────────────────────────────────────────────────────
+// Implementation: external call functions
+// ──────────────────────────────────────────────────────────────────────────────
 
 void menu_judgeapp_handlekey(uint8_t selectAppIndex, uint8_t key)
 {

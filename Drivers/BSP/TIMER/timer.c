@@ -82,6 +82,7 @@ void timer1_int_init(uint32_t arr, uint16_t psc)
     timer_interrupt_enable(TIMER1, TIMER_INT_UP);           /* 使能定时器的更新中断 */
     nvic_irq_enable(TIMER1_IRQn, 1, 3);                     /* 配置NVIC设置优先级，抢占优先级1，响应优先级3 */
     
+    timer_disable(TIMER1);  
 }
 
 // /**
