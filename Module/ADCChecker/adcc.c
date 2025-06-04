@@ -3,7 +3,6 @@
 #include "./BSP/ADC/adc.h"
 #include "./BSP/OLED/oled.h"
 
-
 static float adcx;
 static float temp;
 static uint8_t displayMode = 0; // 0: 数字模式 1:可视化图标 2:混合模式
@@ -154,16 +153,20 @@ static void adcc_switch_mode()
 
 /******************************** STATIC FUNCTION END ***********************************/
 
+void adcc_handle_key(uint8_t key)
+{
+    if (key == 0)
+        return;
 
-void adcc_handle_key(uint8_t key) {
-    if (key == 0) return;
     switch (key)
     {
     case 1:
-        if (++displayMode >= 3)
+        displayMode++;
+        if (displayMode >= 3)
         {
             displayMode = 0;
         }
+        oled_clear();
         break;
     }
 }
