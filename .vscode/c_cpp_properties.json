@@ -1,0 +1,34 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+                "D:\\Amsvartnir1946\\Desktop\\Myself Project\\Proj_Sleep/**"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ],
+            "configurationProvider": "cl.eide"
+        },
+        {
+            "name": "GD32F470",
+            "includePath": [
+                "${workspaceFolder}/../../Drivers/**",
+                "${workspaceFolder}/../../Middlewares/**",
+                "${workspaceFolder}/../../User/**",
+                "${workspaceFolder}/../../Drivers",
+                "${workspaceFolder}/../../Middlewares",
+                "${workspaceFolder}/**"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ],
+            "configurationProvider": "cl.eide"
+        }
+    ],
+    "version": 4
+}

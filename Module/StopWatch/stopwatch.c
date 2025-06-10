@@ -64,7 +64,7 @@ static void st_zeroing()
     oled_refresh_gram();
 }
 
-static void st_promotion()
+void st_promotion()
 {
     if (st_cs >= 100)
     {

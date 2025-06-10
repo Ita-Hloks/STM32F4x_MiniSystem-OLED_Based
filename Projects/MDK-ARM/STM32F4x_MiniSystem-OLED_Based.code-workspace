@@ -26,7 +26,8 @@
             "stdio.h": "c",
             "timer.h": "c",
             "stopwatch.h": "c",
-            "adcc.h": "c"
+            "adcc.h": "c",
+            "pmu.h": "c"
         }
     },
     "extensions": {}

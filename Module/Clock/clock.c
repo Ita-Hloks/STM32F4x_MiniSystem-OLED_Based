@@ -60,7 +60,7 @@ static uint8_t *curVars[EDIT_IDX_COUNT];
 
 // Blink
 bool isBlink = false;
-bool blink_timer_running = false;
+bool blinkTimerRunning = false;
 
 // ──────────────────────────────────────────────────────────────────────────────
 // Declaration: STATTIC FUNCTIONS
@@ -294,7 +294,7 @@ static void clock_curvar_sub()
 static inline void clock_blink_pause()
 {
     timer_disable(TIMERX_INT);
-    blink_timer_running = false;
+    blinkTimerRunning = false;
     isBlink = false;
 }
 
@@ -364,7 +364,7 @@ void clock_handle_key(uint8_t key)
         {
             // Pass the EDIT_IDX_COUNT! EXIT Edit mode
             timer_disable(TIMERX_INT);
-            blink_timer_running = false;
+            blinkTimerRunning = false;
             next = -1;
         }
 
@@ -378,10 +378,10 @@ void clock_handle_key(uint8_t key)
         }
         else
         {
-            if (!blink_timer_running)
+            if (!blinkTimerRunning)
             {
                 timer_enable(TIMERX_INT);
-                blink_timer_running = true;
+                blinkTimerRunning = true;
             }
             // Enter the edit mode. Cache RTC values
             if (curPosIndex == -1)
@@ -412,11 +412,12 @@ void clock_handle_key(uint8_t key)
         clock_blink_pause();
         delay_ms(150);
         break;
+        
     case 0: // key is not pressed...
         // Recover the edit mode normal situtation.
-        if (curPosIndex != -1 && blink_timer_running == false)
+        if (curPosIndex != -1 && blinkTimerRunning == false)
         {
-            blink_timer_running = true;
+            blinkTimerRunning = true;
             timer_enable(TIMERX_INT);
         }
         break;

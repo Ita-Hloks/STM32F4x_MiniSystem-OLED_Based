@@ -13,6 +13,15 @@
  
 #include "./BSP/LED/led.h"
 
+void led_close_all(void)
+{
+  LED1(0);
+  LED2(0);
+  LED3(0);
+  LED4(0);
+  LED5(0);
+  LED6(0);
+}
 
 /**
  * @brief       初始化LED相关IO口, 并使能时钟

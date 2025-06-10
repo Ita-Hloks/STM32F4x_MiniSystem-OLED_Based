@@ -94,8 +94,6 @@ void timer1_int_init(uint32_t arr, uint16_t psc)
 // {
 //     if (timer_interrupt_flag_get(TIMERX_INT, TIMER_INT_FLAG_UP) == SET)     /* 判断定时器更新中断是否发生 */
 //     {
-        
-        
 //         timer_interrupt_flag_clear(TIMERX_INT, TIMER_INT_FLAG_UP);          /* 清除定时器更新中断标志 */
 //     }
 // }
