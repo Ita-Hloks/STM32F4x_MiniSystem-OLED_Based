@@ -6,7 +6,6 @@
 void st_init();
 void st_handle_key(uint8_t key);
 void st_running();
-void st_promotion();
 
 
 #endif /* __STOPWATCH_H__ */

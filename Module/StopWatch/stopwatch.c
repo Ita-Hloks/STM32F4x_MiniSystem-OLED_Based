@@ -4,6 +4,8 @@
 #include "./SYSTEM/delay/delay.h"
 #include "./BSP/OLED/oled.h"
 #include "./SYSTEM/usart/usart.h"
+#include "../Module/Background/bg.h"
+
 #include "stdbool.h"
 
 // ──────────────────────────────────────────────────────────────────────────────
@@ -18,6 +20,10 @@ static bool stMode = false; // Control the Timer
 
 #define ST_FONT_SIZE 16
 #define CHAR_DX (ST_FONT_SIZE / 2)
+
+
+#define KEY_START_OR_STOP 1
+#define KEY_RESET 2
 
 // ──────────────────────────────────────────────────────────────────────────────
 // Declaration: STATTIC FUNCTIONS
@@ -64,7 +70,7 @@ static void st_zeroing()
     oled_refresh_gram();
 }
 
-void st_promotion()
+static void st_promotion()
 {
     if (st_cs >= 100)
     {
@@ -115,22 +121,25 @@ void st_handle_key(uint8_t key)
 {
     switch (key)
     {
-    case 1:
+    case KEY_START_OR_STOP:
         if (stMode)
         {
             timer_disable(TIMER1);
             st_update_oled();
+            unregister_background_task(st_promotion);
         }
         else
         {
             timer_enable(TIMER1);
+            register_background_task(st_promotion);
         }
         stMode = !stMode;
         delay_ms(150);
         break;
 
-    case 2:
+    case KEY_RESET:
         st_zeroing();
+        unregister_background_task(st_promotion);
         delay_ms(150);
         break;
     }
@@ -138,6 +147,5 @@ void st_handle_key(uint8_t key)
 
 void st_running()
 {
-    st_promotion();
     st_update_oled();
 }

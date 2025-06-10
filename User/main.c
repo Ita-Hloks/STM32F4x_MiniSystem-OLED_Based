@@ -25,6 +25,7 @@
 #include "../Module/Menu/menu.h"
 #include "../Module/Clock/clock.h"
 #include "../Module/StopWatch/stopwatch.h"
+#include "../Module/Background/bg.h"
 
 // Other
 #include <string.h>
@@ -54,12 +55,9 @@ int main(void)
     while (1)
     {
         key = key_scan(1);
+        // BG
+        run_background_tasks();
         menu_main_running(key);
-        if (key == WKUP_PRES) {
-            oled_clear();
-            led_close_all();
-            pmu_enter_standby();
-        }
     }
 }
 

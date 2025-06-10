@@ -17,6 +17,12 @@
 #define CLOCK_FONT_SIZE 12            // DEFUALT SIZE
 #define CHAR_DX (CLOCK_FONT_SIZE / 2) // 每个字符宽度（像素）
 
+// KEY
+#define KEY_ENTER_SET 2
+#define KEY_ADD 3
+#define KEY_SUB 4
+
+
 // RTC - Time
 static uint8_t rtc_h;
 static uint8_t rtc_m;
@@ -356,7 +362,7 @@ void clock_handle_key(uint8_t key)
 {
     switch (key)
     {
-    case 2:
+    case KEY_ENTER_SET:
     {
         int8_t next = curPosIndex + 1;
         // switch to the next index
@@ -401,13 +407,13 @@ void clock_handle_key(uint8_t key)
         break;
     }
 
-    case 3: // ADD
+    case KEY_ADD:
         clock_curvar_add();
         clock_blink_pause();
         delay_ms(150);
         break;
 
-    case 4: // SUB
+    case KEY_SUB:
         clock_curvar_sub();
         clock_blink_pause();
         delay_ms(150);

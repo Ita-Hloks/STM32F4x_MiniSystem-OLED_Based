@@ -14,6 +14,12 @@
 // VAR & CONST DEF
 // ──────────────────────────────────────────────────────────────────────────────
 
+// KEY
+#define KEY_CONFIRM 1
+#define KEY_LAST 2
+#define KEY_NEXT 3
+#define KEY_EXIT 6
+
 typedef void (*AppRunFunc)(uint8_t key);
 
 typedef struct {
@@ -190,17 +196,17 @@ void menu_switch_key(uint8_t key)
     if (key == 0) return;
     switch (key)
     {
-    case 1: // CONFIRM
+    case KEY_CONFIRM: // CONFIRM
         currState++;
         oled_clear();
         menu_judgeapp_handlekey(selectAppIndex, 0);
         delay_ms(100);
         break;
-    case 2: // ADD
+    case KEY_LAST: // LAST
         menu_last_app();
         delay_ms(50);
         break;
-    case 3: // SUB
+    case KEY_NEXT: // NEXT
         menu_next_app();
         delay_ms(50);
         break;
@@ -215,7 +221,7 @@ void menu_init() {
 void menu_exit(uint8_t key)
 {
     if (key == 0) return;
-    if(key == 6 && currState != 0) {// EXIT
+    if(key == KEY_EXIT && currState != 0) {// EXIT
         clock_exit();
         currState = 0;
         oled_clear();
