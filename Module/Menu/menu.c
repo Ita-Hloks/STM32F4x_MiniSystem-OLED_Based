@@ -36,7 +36,8 @@ static const char *menu[] = {
     "NoteBook",
     "ABC2",
     "ABC3",
-    "ABC1ABC2",
+    "ABC4",
+    "ABC5",
 };
 static uint8_t menuPointerIndex = 0; // 三角指针的位置，0: Up， 1: Down
 uint8_t selectAppIndex = 0;       // 应用程序选择的索引值
@@ -158,7 +159,6 @@ static void menu_next_app()
 }
 
 // Application:
-
 void app_clock(uint8_t key) {
     if (key) clock_handle_key(key);
     clock_runing();

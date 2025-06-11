@@ -1,13 +1,13 @@
 /*************************************** README ******************************************
- * 
+ *
  * 小型菜单的实现 框架
  * KEY1 : 确认
  * KEY2 : 上翻
- * KEY3 : 下翻 
+ * KEY3 : 下翻
  *
  * KEY6 : 退出
  * KEY_WAKE_UP : 待机(会阻断烧录)
- * 
+ *
  */
 
 // Bank
@@ -21,7 +21,7 @@
 #include "./BSP/TIMER/timer.h"
 #include "./BSP/PMU/pmu.h"
 
-// Module 
+// Module
 #include "../Module/Menu/menu.h"
 #include "../Module/Clock/clock.h"
 #include "../Module/StopWatch/stopwatch.h"
@@ -57,8 +57,11 @@ int main(void)
         key = key_scan(1);
         // BG
         run_background_tasks();
+        
         menu_main_running(key);
+        if (key == WKUP_PRES)
+        {
+            pmu_enter_standby();
+        }
     }
 }
-
-
