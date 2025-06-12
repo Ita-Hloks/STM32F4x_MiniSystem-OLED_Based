@@ -29,7 +29,10 @@
             "adcc.h": "c",
             "pmu.h": "c",
             "stdbool.h": "c",
-            "bg.h": "c"
+            "bg.h": "c",
+            "norflash.h": "c",
+            "spi.h": "c",
+            "uflash.h": "c"
         }
     },
     "extensions": {}

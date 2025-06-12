@@ -1,4 +1,5 @@
 #include "./clock.h"
+#include "../Module/AppFlash/uflash.h"
 
 #include "./SYSTEM/usart/usart.h"
 #include "./SYSTEM/delay/delay.h"
@@ -158,7 +159,7 @@ static uint8_t draw_blink_num(uint8_t x, uint8_t y, uint16_t value, uint8_t digi
 }
 
 /**
- * @brief  用 12 号字体分两行显示：“YY-MM-DD-W”，“HH:MM:SS”
+ * @brief  用 12 号字体分两行显示："YY-MM-DD-W"，"HH:MM:SS"
  */
 static void clock_display_time12()
 {
@@ -260,7 +261,6 @@ static inline void clock_choose_var(int8_t idx)
         {
             curPosIndex = -1;
             curPos = NULL;
-            printf("set NULL");
         }
     }
 }
@@ -452,6 +452,12 @@ void clock_init()
     curPosIndex = -1;
     curPos = NULL;
     clockEditMode = 0;
+
+    // 初始化 Flash 并加载闹钟数据
+    if (fls_init() != FLS_OK) {
+        while(1); // 如果初始化失败，进入死循环
+    }
+    clock_load_alarm();
 }
 
 void clock_handle_key(uint8_t key)
@@ -471,7 +477,6 @@ void clock_handle_key(uint8_t key)
         int8_t next = curPosIndex + 1;
         // switch to the next index
 
-
         if (dspMode == DSP_CLOCK)
         {
             if (next >= T_EDIT_IDX_COUNT)
@@ -488,7 +493,6 @@ void clock_handle_key(uint8_t key)
                 // Save data
                 rtc_set_time(clockEdit_h, clockEdit_m, rtc_s, clock_ampm);
                 rtc_set_date(clockEdit_year, clockEdit_month, clockEdit_day, clockEdit_week);
-                printf("set clock!");
             }
             else
             {
@@ -520,10 +524,14 @@ void clock_handle_key(uint8_t key)
 
             if (next == -1)
             {
-                // Save data
-                rtc_set_alarma(3, 12, 13, 50);
-                printf("set alarm!");
-            }else
+                // 保存闹钟数据到 Flash
+                if (clock_save_alarm() != FLS_OK) {
+                    // 保存失败处理
+                    oled_show_string(10, 30, "Save Failed!", 12);
+                    delay_ms(1000);
+                }
+            }
+            else
             {
                 if (!blinkTimerRunning)
                 {
@@ -593,4 +601,50 @@ void clock_exit()
 {
     clockEditMode = 0;
     curPosIndex = -1;
+}
+
+// 新增：保存闹钟数据到 Flash
+FLS_Status clock_save_alarm(void) {
+    AlarmData alarmData = {
+        .magic = CLOCK_MAGIC_NUMBER,
+        .hour = alarm_h,
+        .minute = alarm_m,
+        .second = alarm_s,
+        .weekday = alarm_w
+    };
+    
+    FLS_Status status = fls_erase_sector(ALARM_FLASH_ADDR);
+    if (status != FLS_OK) {
+        return status;
+    }
+    
+    return fls_write(ALARM_FLASH_ADDR, (uint8_t*)&alarmData, sizeof(AlarmData));
+}
+
+// 新增：从 Flash 加载闹钟数据
+FLS_Status clock_load_alarm(void) {
+    AlarmData alarmData;
+    
+    // 读取数据
+    FLS_Status status = fls_read(ALARM_FLASH_ADDR, (uint8_t*)&alarmData, sizeof(AlarmData));
+    if (status != FLS_OK) {
+        return status;
+    }
+    
+    if (alarmData.magic != CLOCK_MAGIC_NUMBER) {
+        // 数据无效，使用默认值
+        alarm_h = 8;
+        alarm_m = 29;
+        alarm_s = 50;
+        alarm_w = 4;
+        return FLS_OK;
+    }
+    
+    // 加载数据
+    alarm_h = alarmData.hour;
+    alarm_m = alarmData.minute;
+    alarm_s = alarmData.second;
+    alarm_w = alarmData.weekday;
+    
+    return FLS_OK;
 }

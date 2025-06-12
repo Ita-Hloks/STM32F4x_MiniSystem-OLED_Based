@@ -171,6 +171,12 @@
                 "path": "../../Drivers/BSP/TIMER/timer.c"
               },
               {
+                "path": "../../Drivers/BSP/NORFLASH/norflash.c"
+              },
+              {
+                "path": "../../Drivers/BSP/SPI/spi.c"
+              },
+              {
                 "path": "../../Drivers/BSP/PMU/pmu.c"
               }
             ],

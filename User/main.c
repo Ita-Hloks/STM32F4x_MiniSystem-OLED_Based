@@ -14,12 +14,13 @@
 #include "./SYSTEM/sys/sys.h"
 #include "./SYSTEM/usart/usart.h"
 #include "./SYSTEM/delay/delay.h"
+#include "./USMART/usmart.h"
 #include "./BSP/LED/led.h"
 #include "./BSP/KEY/key.h"
 #include "./BSP/ADC/adc.h"
-#include "./USMART/usmart.h"
-#include "./BSP/TIMER/timer.h"
 #include "./BSP/PMU/pmu.h"
+#include "./BSP/TIMER/timer.h"
+#include "./BSP/NORFLASH/norflash.h"
 
 // Module
 #include "../Module/Menu/menu.h"
@@ -43,7 +44,10 @@ int main(void)
     key_init();
     rtc_config();
     adc_init();
-    pmu_wkup_key_init();
+
+    // norflash_init();
+
+    // pmu_wkup_key_init();
 
     rtc_set_wakeup(WAKEUP_CKSPRE, 0); /* 配置WAKE UP中断,1秒钟中断一次 */
 
@@ -57,7 +61,6 @@ int main(void)
         key = key_scan(1);
         // BG
         run_background_tasks();
-        
         menu_main_running(key);
         if (key == WKUP_PRES)
         {
