@@ -45,9 +45,7 @@ int main(void)
     rtc_config();
     adc_init();
 
-    // norflash_init();
-
-    // pmu_wkup_key_init();
+    pmu_wkup_key_init();
 
     rtc_set_wakeup(WAKEUP_CKSPRE, 0); /* 配置WAKE UP中断,1秒钟中断一次 */
 

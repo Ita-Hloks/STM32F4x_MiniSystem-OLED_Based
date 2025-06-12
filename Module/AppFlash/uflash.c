@@ -18,9 +18,6 @@ static FLS_State currentState = FLS_STATE_IDLE;
 #define FLS_SECTOR_SIZE   0x1000      // 扇区大小 (4KB)
 #define FLS_PAGE_SIZE     0x100       // 页大小 (256B)
 
-// 魔数定义，用于验证数据有效性
-#define FLS_MAGIC_NUMBER  0xAA55
-
 // ──────────────────────────────────────────────────────────────────────────────
 // Implementation: STATIC FUNCTIONS
 // ──────────────────────────────────────────────────────────────────────────────
@@ -61,12 +58,8 @@ static FLS_Status fls_wait_ready(uint32_t timeout) {
 // ──────────────────────────────────────────────────────────────────────────────
 
 FLS_Status fls_init(void) {
-    printf("[FLS] Starting initialization...\r\n");
-    
-    // 初始化 NOR Flash
     norflash_init();
-    printf("[FLS] norflash_init() completed\r\n");
-    
+
     // 等待设备就绪并验证初始化是否成功
     printf("[FLS] Waiting for device ready...\r\n");
     if (fls_wait_ready(1000) != FLS_OK) {

@@ -35,8 +35,7 @@ static uint8_t rtc_day;
 static uint8_t rtc_week;
 static uint8_t clock_ampm;
 static uint8_t weekdays[8][4] = {
-    "-No", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"
-};
+    "NUL", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
 
 // Defines the order of editable fields
 enum
@@ -104,7 +103,8 @@ static void clock_curvar_add();
 static void clock_curvar_sub();
 static inline void clock_blink_pause();
 
-// Alarm
+// ALARM
+static void alarm_display_time12();
 
 // ──────────────────────────────────────────────────────────────────────────────
 // Implementation: STATTIC FUNCTIONS
@@ -128,7 +128,7 @@ static void clock_update_cur_vars()
     curVarsA[A_EDIT_IDX_HOUR] = &alarm_h;
     curVarsA[A_EDIT_IDX_MIN] = &alarm_m;
     curVarsA[A_EDIT_IDX_SEC] = &alarm_s;
-    curVarsA[A_EDIT_IDX_WEEK] = &alarm_w;  // 添加闹钟星期的指针
+    curVarsA[A_EDIT_IDX_WEEK] = &alarm_w; // 添加闹钟星期的指针
 }
 
 /**
@@ -160,7 +160,7 @@ static uint8_t draw_blink_num(uint8_t x, uint8_t y, uint16_t value, uint8_t digi
 }
 
 /**
- * @brief  用 12 号字体分两行显示："YY-MM-DD-W"，"HH:MM:SS"
+ * @brief  用 12 号字体显示, "HH:MM:SS"
  */
 static void clock_display_time12()
 {
@@ -283,6 +283,10 @@ static void clock_curvar_add()
 
     case T_EDIT_IDX_SEC: // SEC need ALWALS update let user know the accurate time
         *curPos = ((*curPos) + 1) % 60;
+        if (dspMode == DSP_CLOCK)
+        {
+            rtc_set_time(clockEdit_h, clockEdit_m, rtc_s, clock_ampm);
+        }
         break;
 
     case T_EDIT_IDX_YEAR:
@@ -299,9 +303,6 @@ static void clock_curvar_add()
 
     case T_EDIT_IDX_WEEK:
         *curPos = (*curPos % 7) + 1;
-        break;
-
-    default:
         break;
     }
 }
@@ -323,7 +324,10 @@ static void clock_curvar_sub()
 
     case T_EDIT_IDX_SEC:
         *curPos = ((*curPos) == 0) ? 59 : (*curPos) - 1;
-        rtc_set_time(clockEdit_h, clockEdit_m, rtc_s, clock_ampm);
+        if (dspMode == DSP_CLOCK)
+        {
+            rtc_set_time(clockEdit_h, clockEdit_m, rtc_s, clock_ampm);
+        }
         break;
 
     case T_EDIT_IDX_YEAR:
@@ -340,9 +344,6 @@ static void clock_curvar_sub()
 
     case T_EDIT_IDX_WEEK:
         *curPos = (*curPos - 2 + 7) % 7 + 1;
-        break;
-
-    default:
         break;
     }
 }
@@ -454,8 +455,10 @@ void clock_init()
     clockEditMode = 0;
 
     // 初始化 Flash 并加载闹钟数据
-    if (fls_init() != FLS_OK) {
-        while(1); // 如果初始化失败，进入死循环
+    if (fls_init() != FLS_OK)
+    {
+        while (1)
+            ; // 如果初始化失败，进入死循环
     }
     clock_load_alarm();
 }
@@ -492,7 +495,7 @@ void clock_handle_key(uint8_t key)
                 clockEditMode = 0;
                 // Save data
                 printf("Save RTC Success!\r\n");
-                printf("H:%d M:%d S:%d AMP:%d\r\n", clockEdit_h, clockEdit_m, rtc_s, clock_ampm);
+                printf("H:%d M:%d S:%d W:%d\r\n", clockEdit_h, clockEdit_m, rtc_s, rtc_week);
                 rtc_set_time(clockEdit_h, clockEdit_m, rtc_s, clock_ampm);
                 rtc_set_date(clockEdit_year, clockEdit_month, clockEdit_day, clockEdit_week);
             }
@@ -515,7 +518,9 @@ void clock_handle_key(uint8_t key)
                     clockEdit_week = rtc_week;
                 }
             }
-        } else if (dspMode == DSP_ALARM) {
+        }
+        else if (dspMode == DSP_ALARM)
+        {
             if (next >= A_EDIT_IDX_COUNT)
             {
                 // Pass the EDIT_IDX_COUNT! EXIT Edit mode
@@ -527,15 +532,16 @@ void clock_handle_key(uint8_t key)
             if (next == -1)
             {
                 // 保存闹钟数据到 Flash
-                if (clock_save_alarm() != FLS_OK) {
+                if (clock_save_alarm() != FLS_OK)
+                {
                     // 保存失败处理
                     oled_show_string(10, 30, "Save Failed!", 12);
                     delay_ms(1000);
                 }
                 // 设置 RTC 闹钟
-                rtc_set_alarma(alarm_h, alarm_h, alarm_s, alarm_w);
+                rtc_set_alarma(alarm_w, alarm_h, alarm_m, alarm_s);
                 printf("Save ALARM Success!\r\n");
-                printf("H:%d M:%d S:%d AMP:%d\r\n", alarm_h, alarm_h, alarm_s, alarm_w);
+                printf("H:%d M:%d S:%d W:%d\r\n", alarm_h, alarm_m, alarm_s, alarm_w);
             }
             else
             {
@@ -566,7 +572,7 @@ void clock_handle_key(uint8_t key)
         delay_ms(150);
         break;
 
-    case 0: // key is not pressed...
+    default: // key is not pressed...
         // Recover the edit mode normal situtation.
         if (curPosIndex != -1 && blinkTimerRunning == false)
         {
@@ -609,48 +615,53 @@ void clock_exit()
     curPosIndex = -1;
 }
 
-// 新增：保存闹钟数据到 Flash
-FLS_Status clock_save_alarm(void) {
+FLS_Status clock_save_alarm(void)
+{
     AlarmData alarmData = {
         .magic = CLOCK_MAGIC_NUMBER,
         .hour = alarm_h,
         .minute = alarm_m,
         .second = alarm_s,
-        .weekday = alarm_w
-    };
-    
+        .weekday = alarm_w};
+
     FLS_Status status = fls_erase_sector(ALARM_FLASH_ADDR);
-    if (status != FLS_OK) {
+    if (status != FLS_OK)
+    {
         return status;
     }
-    
-    return fls_write(ALARM_FLASH_ADDR, (uint8_t*)&alarmData, sizeof(AlarmData));
+
+    return fls_write(ALARM_FLASH_ADDR, (uint8_t *)&alarmData, sizeof(AlarmData));
 }
 
-// 新增：从 Flash 加载闹钟数据
-FLS_Status clock_load_alarm(void) {
+FLS_Status clock_load_alarm(void)
+{
     AlarmData alarmData;
-    
+
     // 读取数据
-    FLS_Status status = fls_read(ALARM_FLASH_ADDR, (uint8_t*)&alarmData, sizeof(AlarmData));
-    if (status != FLS_OK) {
+    FLS_Status status = fls_read(ALARM_FLASH_ADDR, (uint8_t *)&alarmData, sizeof(AlarmData));
+    if (status != FLS_OK)
+    {
         return status;
     }
-    
-    if (alarmData.magic != CLOCK_MAGIC_NUMBER) {
+
+    if (alarmData.magic != CLOCK_MAGIC_NUMBER)
+    {
         // 数据无效，使用默认值
         alarm_h = 8;
         alarm_m = 29;
         alarm_s = 50;
         alarm_w = 4;
+        printf("[WAR] The AlarmData read fall!");
         return FLS_OK;
     }
-    
+
     // 加载数据
     alarm_h = alarmData.hour;
     alarm_m = alarmData.minute;
     alarm_s = alarmData.second;
     alarm_w = alarmData.weekday;
-    
+    rtc_set_alarma(alarm_w, alarm_h, alarm_m, alarm_s);
+    printf("Init ALARM Success!\r\n");
+    printf("H:%d M:%d S:%d W:%d\r\n", alarm_h, alarm_m, alarm_s, alarm_w);
     return FLS_OK;
 }

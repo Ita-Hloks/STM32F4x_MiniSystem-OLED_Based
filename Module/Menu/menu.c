@@ -1,12 +1,15 @@
 #include "./menu.h"
 
 #include "./SYSTEM/delay/delay.h"
+#include "./SYSTEM/usart/usart.h"
+#include "./SYSTEM/sys/sys.h"
+
+#include "./BSP/OLED/oled.h"
+#include "./BSP/RTC/rtc.h"
+
 #include "../Module/Clock/clock.h"
 #include "../Module/StopWatch/stopwatch.h"
 #include "../Module/ADCChecker/adcc.h"
-#include "./BSP/RTC/rtc.h"
-#include "../Drivers/BSP/OLED/oled.h"
-#include "./SYSTEM/sys/sys.h"
 
 #include <string.h>
 
@@ -160,7 +163,7 @@ static void menu_next_app()
 
 // Application:
 void app_clock(uint8_t key) {
-    if (key) clock_handle_key(key);
+    clock_handle_key(key);
     clock_runing();
 }
 
@@ -220,7 +223,6 @@ void menu_init() {
 
 void menu_exit(uint8_t key)
 {
-    if (key == 0) return;
     if(key == KEY_EXIT && currState != 0) {// EXIT
         clock_exit();
         currState = 0;

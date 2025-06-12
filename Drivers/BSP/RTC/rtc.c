@@ -300,8 +300,13 @@ void RTC_Alarm_IRQHandler(void)
 {
     if (RESET != rtc_flag_get(RTC_FLAG_ALRM0)) /* ALARM0中断? */
     {
-        rtc_flag_clear(RTC_FLAG_ALRM0);        /* 清除中断标志 */       
-        printf("ALARM0!\r\n");
+        rtc_flag_clear(RTC_FLAG_ALRM0);        /* 清除中断标志 */   
+        LED1_TOGGLE();
+        LED2_TOGGLE();
+        LED3_TOGGLE();
+        LED4_TOGGLE();
+        LED5_TOGGLE();
+        LED6_TOGGLE();
     } 
     
     exti_flag_clear(EXTI_17);                  /* 清除中断线17的中断标志 */
