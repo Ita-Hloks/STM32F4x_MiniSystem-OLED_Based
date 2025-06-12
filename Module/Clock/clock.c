@@ -128,6 +128,7 @@ static void clock_update_cur_vars()
     curVarsA[A_EDIT_IDX_HOUR] = &alarm_h;
     curVarsA[A_EDIT_IDX_MIN] = &alarm_m;
     curVarsA[A_EDIT_IDX_SEC] = &alarm_s;
+    curVarsA[A_EDIT_IDX_WEEK] = &alarm_w;  // 添加闹钟星期的指针
 }
 
 /**
@@ -282,7 +283,6 @@ static void clock_curvar_add()
 
     case T_EDIT_IDX_SEC: // SEC need ALWALS update let user know the accurate time
         *curPos = ((*curPos) + 1) % 60;
-        rtc_set_time(clockEdit_h, clockEdit_m, rtc_s, clock_ampm);
         break;
 
     case T_EDIT_IDX_YEAR:
@@ -384,7 +384,7 @@ static void alarm_display_time12()
 
     uint8_t disp_h = alarm_h;
     uint8_t disp_m = alarm_m;
-    uint8_t disp_s = alarm_s; // 秒始终取 RTC
+    uint8_t disp_s = alarm_s;
 
     // Determine if field needs to blink
     bool blink_hour = (curPosIndex == A_EDIT_IDX_HOUR);
@@ -392,7 +392,7 @@ static void alarm_display_time12()
     bool blink_sec = (curPosIndex == A_EDIT_IDX_SEC);
     bool blink_week = (curPosIndex == A_EDIT_IDX_WEEK);
 
-    oled_show_string(20, 0, "CLOCK", 12);
+    oled_show_string(20, 0, "ALARM", 12);
 
     // Display Week
     if (blink_week && isBlink)
@@ -491,6 +491,8 @@ void clock_handle_key(uint8_t key)
                 // point to NULL
                 clockEditMode = 0;
                 // Save data
+                printf("Save RTC Success!\r\n");
+                printf("H:%d M:%d S:%d AMP:%d\r\n", clockEdit_h, clockEdit_m, rtc_s, clock_ampm);
                 rtc_set_time(clockEdit_h, clockEdit_m, rtc_s, clock_ampm);
                 rtc_set_date(clockEdit_year, clockEdit_month, clockEdit_day, clockEdit_week);
             }
@@ -530,6 +532,10 @@ void clock_handle_key(uint8_t key)
                     oled_show_string(10, 30, "Save Failed!", 12);
                     delay_ms(1000);
                 }
+                // 设置 RTC 闹钟
+                rtc_set_alarma(alarm_h, alarm_h, alarm_s, alarm_w);
+                printf("Save ALARM Success!\r\n");
+                printf("H:%d M:%d S:%d AMP:%d\r\n", alarm_h, alarm_h, alarm_s, alarm_w);
             }
             else
             {
